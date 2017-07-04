@@ -17,6 +17,7 @@ limitations under the License.
 
 """
 from __future__ import print_function
+from __future__ import print_function
 
 import os
 import sys
@@ -55,7 +56,7 @@ class RfLint(object):
     def suite_rules(self):
         return self._get_rules(SuiteRule)
 
-    @property 
+    @property
     def resource_rules(self):
         return self._get_rules(ResourceRule)
 
@@ -84,7 +85,7 @@ class RfLint(object):
         if self.args.version:
             print(__version__)
             return 0
-            
+
         if self.args.rulefile:
             for filename in self.args.rulefile:
                 self._load_rule_file(filename)
@@ -92,13 +93,13 @@ class RfLint(object):
         if self.args.list:
             self.list_rules()
             return 0
-        
+
         if self.args.describe:
             self._describe_rules(self.args.args)
             return 0
 
         self.counts = { ERROR: 0, WARNING: 0, "other": 0}
-            
+
         for filename in self.args.args:
             if not (os.path.exists(filename)):
                 sys.stderr.write("rflint: %s: No such file or directory\n" % filename)
@@ -140,11 +141,11 @@ class RfLint(object):
             if self.args.recursive:
                 for dirname in sorted(dirs):
                     self._process_folder(os.path.join(root, dirname))
- 
+
     def _process_file(self, filename):
         # this is used by the reporting mechanism to know if it
         # should print the filename. Once it has been printed it
-        # will be reset so that it won't get printed again until 
+        # will be reset so that it won't get printed again until
         # we process the next file.
         self._print_filename = filename if self.args.print_filenames else None
 
@@ -200,9 +201,9 @@ class RfLint(object):
 
     def _get_rules(self, cls):
         """Returns a list of rules of a given class
-        
+
         Rules are treated as singletons - we only instantiate each
-        rule once. 
+        rule once.
         """
 
         result = []
@@ -263,12 +264,12 @@ class RfLint(object):
                             help="show a list of known rules and exit")
         parser.add_argument("--describe", "-d", action="store_true",
                             help="describe the given ruless")
-        parser.add_argument("--no-filenames", action="store_false", dest="print_filenames", 
+        parser.add_argument("--no-filenames", action="store_false", dest="print_filenames",
                             default=True,
                             help="suppress the printing of filenames")
-        parser.add_argument("--format", "-f", 
+        parser.add_argument("--format", "-f",
                             help="Define the output format",
-                            default='{severity}: {linenumber}, {char}: {message} ({rulename})')
+                            default=u'{severity}: {linenumber}, {char}: {message} ({rulename})')
         parser.add_argument("--version", action="store_true", default=False,
                             help="Display version number and exit")
         parser.add_argument("--verbose", "-v", action="store_true", default=False,
@@ -289,6 +290,9 @@ class RfLint(object):
         ns = argparse.Namespace()
         setattr(ns, "app", self)
         args = parser.parse_args(args, ns)
+
+        if sys.version_info < (3,):
+            args.format = args.format.decode('utf-8')
 
         Rule.output_format = args.format
 
