@@ -1,4 +1,5 @@
 import sys
+import traceback
 from .rflint import RfLint
 
 
@@ -10,6 +11,7 @@ def main(args=None):
 
     except Exception as e:
         sys.stderr.write(str(e) + "\n")
+        traceback.print_exc()
         return 1
 
 if __name__ == "__main__":
